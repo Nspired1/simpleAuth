@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import axios from "axios";
 
 function Login() {
@@ -13,7 +14,10 @@ function Login() {
       },
       withCredentials: true,
       url: "http://localhost:8081/api/auth/signin",
-    }).then((res) => console.log(res));
+    }).then(
+      (res) => console.log(res),
+      console.log(`This is inside login() of Login`)
+    );
   };
 
   return (
@@ -22,6 +26,7 @@ function Login() {
       <form
         onSubmit={(e) => {
           e.preventDefault();
+          login();
         }}
       >
         <label htmlFor="username">
@@ -44,7 +49,7 @@ function Login() {
             onChange={(e) => setLoginPassword(e.target.value)}
           />
         </label>
-        <button onClick={login}>Submit</button>
+        <button>Submit</button>
       </form>
     </div>
   );
