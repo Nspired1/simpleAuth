@@ -16,10 +16,11 @@ function Logout() {
       <form
         onSubmit={(e) => {
           e.preventDefault();
+          logout();
         }}
       >
         <label htmlFor="logout"></label>
-        <button onClick={logout}>Logout</button>
+        <button>Logout</button>
       </form>
     </div>
   );

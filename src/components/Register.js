@@ -1,65 +1,93 @@
-import { useState } from "react";
-import axios from "axios";
+import React, { useState, useContext, useEffect } from "react";
+//import axios from "axios";
+import AlertContext from "../context/alert/alertContext";
+import AuthContext from "../context/auth/authContext";
 
-function Register() {
-  const [registerUsername, setRegisterUsername] = useState("");
-  const [registerEmail, setRegisterEmail] = useState("");
-  const [registerPassword, setRegisterPassword] = useState("");
-  const register = () => {
-    axios({
-      method: "POST",
-      data: {
-        email: registerEmail,
-        username: registerUsername,
-        password: registerPassword,
-      },
-      withCredentials: true,
-      url: "http://localhost:8081/api/auth/signup",
-    }).then((res) => console.log(res));
+const Register = (props) => {
+  const alertContext = useContext(AlertContext);
+  const authContext = useContext(AuthContext);
+
+  const { setAlert } = alertContext;
+  const { register, error, clearErrors, isAuthenticated } = authContext;
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      props.history.push("/");
+    }
+    if (error === "User already exists") {
+      setAlert(error, "danger");
+      clearErrors();
+    }
+  }, [error, isAuthenticated, props.history]);
+
+  const [user, setUser] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
+
+  const { username, email, password } = user;
+
+  const onChange = (e) => setUser({ ...user, [e.target.name]: e.target.value });
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    if (username === "" || email === "" || password === "") {
+      setAlert("Please enter all fields", "danger");
+    } else {
+      console.log("Register SUBMIT");
+      // register() from authContext
+      register({
+        username,
+        email,
+        password,
+      });
+    }
   };
 
   return (
-    <div>
+    <div className="container">
       <h1>Register</h1>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-        }}
-      >
-        <label htmlFor="email">
-          Email
-          <input
-            type="text"
-            id="email"
-            placeholder="Enter email"
-            value={registerEmail}
-            onChange={(e) => setRegisterEmail(e.target.value)}
-          />
-        </label>
-        <label htmlFor="username">
-          Username
+      <form onSubmit={onSubmit}>
+        <div className="form-group">
+          <label htmlFor="username">Username </label>
           <input
             type="text"
             id="username"
             placeholder="Enter username"
-            value={registerUsername}
-            onChange={(e) => setRegisterUsername(e.target.value)}
+            name="username"
+            value={username}
+            onChange={onChange}
           />
-        </label>
-        <label htmlFor="password">
-          Password
+        </div>
+        <div className="form-group">
+          <label htmlFor="email">Email </label>
+          <input
+            type="text"
+            name="email"
+            id="email"
+            placeholder="Enter email"
+            value={email}
+            onChange={onChange}
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="password">Password</label>
           <input
             type="password"
+            name="password"
             id="password"
             placeholder="Enter password"
-            value={registerPassword}
-            onChange={(e) => setRegisterPassword(e.target.value)}
+            value={password}
+            onChange={onChange}
           />
-        </label>
-        <button onClick={register}>Submit</button>
+        </div>
+        <button type="submit" className="btn btn-primary btn-block">
+          Submit
+        </button>
       </form>
     </div>
   );
-}
+};
 
 export default Register;
